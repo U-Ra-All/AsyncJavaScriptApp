@@ -103,17 +103,41 @@ const getCoutnryAndBorderCountries = function (countryName) {
   });
 };
 
-getCoutnryAndBorderCountries('usa');
+// getCoutnryAndBorderCountries('usa');
 
-setTimeout(() => {
-  console.log('Прошла 1 секунда');
-  setTimeout(() => {
-    console.log('Прошло 2 секунды');
-    setTimeout(() => {
-      console.log('Прошло 3 секунды');
-      setTimeout(() => {
-        console.log('Прошло 4 секунды');
-      }, 1000);
-    }, 1000);
-  }, 1000);
-}, 1000);
+// setTimeout(() => {
+//   console.log('Прошла 1 секунда');
+//   setTimeout(() => {
+//     console.log('Прошло 2 секунды');
+//     setTimeout(() => {
+//       console.log('Прошло 3 секунды');
+//       setTimeout(() => {
+//         console.log('Прошло 4 секунды');
+//       }, 1000);
+//     }, 1000);
+//   }, 1000);
+// }, 1000);
+
+// const request = new XMLHttpRequest();
+// request.open('GET', `https://restcountries.com/v3.1/name/${countryName}`);
+// request.send();
+
+// const getCoutnryData = function (countryName) {
+//   fetch(`https://restcountries.com/v3.1/name/${countryName}`)
+//     .then(function (response) {
+//       console.log(response);
+//       return response.json();
+//     })
+//     .then(function (data) {
+//       console.log(data);
+//       displayCountry(data[0]);
+//     });
+// };
+
+const getCoutnryData = function (countryName) {
+  fetch(`https://restcountries.com/v3.1/name/${countryName}`)
+    .then(response => response.json())
+    .then(data => displayCountry(data[0]));
+};
+
+getCoutnryData('ukraine');
