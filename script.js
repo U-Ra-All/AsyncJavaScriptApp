@@ -139,23 +139,71 @@ const getCoutnryAndBorderCountries = function (countryName) {
 //     });
 // };
 
+const getDataAndConvertToJSON = function (
+  url,
+  errorMessage = 'Что-то пошло не так 🧐.'
+) {
+  return fetch(url).then(response => {
+    if (!response.ok)
+      throw new Error(`${errorMessage} Ошибка ${response.status}`);
+    return response.json();
+  });
+};
+
+// const getCoutnryData = function (countryName) {
+//   fetch(`https://restcountries.com/v3.1/name/${countryName}`)
+//     .then(response => {
+//       console.log(response);
+
+//       if (!response.ok)
+//         throw new Error(`Страна не найдена. Ошибка ${response.status}`);
+//       return response.json();
+//     })
+//     .then(data => {
+//       displayCountry(data[0]);
+//       // const firstNeighbour = data[0].borders[0];
+//       const firstNeighbour = 'afasga';
+
+//       if (!firstNeighbour) return;
+
+//       return fetch(`https://restcountries.com/v3.1/alpha/${firstNeighbour}`);
+//     })
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Страна не найдена. Ошибка ${response.status}`);
+//       return response.json();
+//     })
+//     .then(data => displayCountry(data[0], 'neighbour'))
+//     .catch(e => {
+//       console.error(`${e} 🧐`);
+//       displayError(`Что-то пошло не так 🧐: ${e.message}. Попробуйте ещё раз!`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
+
 const getCoutnryData = function (countryName) {
-  fetch(`https://restcountries.com/v3.1/name/${countryName}`)
-    .then(response => response.json())
+  getDataAndConvertToJSON(
+    `https://restcountries.com/v3.1/name/${countryName}`,
+    'Страна не найдена.'
+  )
     .then(data => {
       displayCountry(data[0]);
+
+      if (!data[0].borders) throw new Error('Соседних стран не найдено!');
+
       const firstNeighbour = data[0].borders[0];
-      console.log(firstNeighbour);
 
-      if (!firstNeighbour) return;
-
-      return fetch(`https://restcountries.com/v3.1/alpha/${firstNeighbour}`);
+      return getDataAndConvertToJSON(
+        `https://restcountries.com/v3.1/alpha/${firstNeighbour}`,
+        'Страна не найдена.'
+      );
     })
-    .then(response => response.json())
     .then(data => displayCountry(data[0], 'neighbour'))
     .catch(e => {
       console.error(`${e} 🧐`);
-      displayError(`Что-то пошло не так 🧐: ${e.message}. Попробуйте ещё раз!`);
+      displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
     })
     .finally(() => {
       countriesContainer.style.opacity = 1;
@@ -166,4 +214,4 @@ btn.addEventListener('click', function () {
   getCoutnryData('ukraine');
 });
 
-getCoutnryData('sfdasdf');
+getCoutnryData('japan');
