@@ -285,6 +285,9 @@ btn.addEventListener('click', function () {
 // });
 // console.log('Конец теста');
 
+///////////////////////////////////////////////
+// Создание Простого Promise
+
 // const lotteryPromise = new Promise(function (resolve, reject) {
 //   console.log('Происходит розыгрыш лотереи 🪄');
 //   setTimeout(function () {
@@ -299,11 +302,11 @@ btn.addEventListener('click', function () {
 // lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
 
 // // Promisifying (промисификация) функции setTimeout()
-const wait = function (seconds) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, seconds * 1000);
-  });
-};
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
 
 // wait(3)
 //   .then(() => {
@@ -327,23 +330,76 @@ const wait = function (seconds) {
 //   }, 1000);
 // }, 1000);
 
-wait(1)
-  .then(() => {
-    console.log('Прошла 1 секунда');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('Прошла 2 секунда');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('Прошла 3 секунда');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('Прошла 4 секунда');
-    return wait(1);
-  });
+// wait(1)
+//   .then(() => {
+//     console.log('Прошла 1 секунда');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('Прошла 2 секунда');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('Прошла 3 секунда');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('Прошла 4 секунда');
+//     return wait(1);
+//   });
 
-Promise.resolve('Resolved!').then(res => console.log(res));
-Promise.reject(new Error('Rejected!')).catch(e => console.error(e));
+// Promise.resolve('Resolved!').then(res => console.log(res));
+// Promise.reject(new Error('Rejected!')).catch(e => console.error(e));
+
+///////////////////////////////////////////////
+// Промисификация API Геолокации
+
+const getUserPosition = function () {
+  return new Promise(function (resolve, reject) {
+    // navigator.geolocation.getCurrentPosition(
+    //   position => resolve(position),
+    //   e => reject(e)
+    // );
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+// getUserPosition()
+//   .then(pos => console.log(pos))
+//   .catch(e => console.error(e));
+
+const displayUserCountry = function () {
+  getUserPosition()
+    .then(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+
+      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    })
+    .then(response => {
+      if (!response.ok)
+        throw new Error(
+          `Проблема с геокодированием (ошибка ${response.status})`
+        );
+      return response.json();
+    })
+    .then(data => {
+      console.log(data);
+      console.log(`You are in ${data.city}, ${data.country}`);
+      return getDataAndConvertToJSON(
+        `https://restcountries.com/v3.1/name/${data.country.toLowerCase()}`,
+        'Страна не найдена.'
+      );
+    })
+    .then(data => displayCountry(data[0]))
+    .catch(e => {
+      console.error(`${e} 🧐`);
+      displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    })
+
+    .catch(e => console.error(`${e.message} 🧐`));
+};
+
+displayUserCountry();
