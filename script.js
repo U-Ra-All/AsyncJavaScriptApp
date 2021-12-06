@@ -35,6 +35,83 @@ const displayError = function (message) {
   // countriesContainer.style.opacity = 1;
 };
 
+const getCoutnryAndBorderCountries = function (countryName) {
+  // Вызов AJAX для получения данных о стране
+  const request1 = new XMLHttpRequest();
+  request1.open('GET', `https://restcountries.com/v3.1/name/${countryName}`);
+  request1.send();
+
+  request1.addEventListener('load', function () {
+    const [data1] = JSON.parse(this.responseText);
+    console.log(data1);
+
+    // Отображение страны
+    displayCountry(data1);
+
+    // Получаем первую соседнюю страну
+    const [firstNeighbour] = data1.borders;
+
+    if (!firstNeighbour) return;
+
+    // Вызов AJAX для получения данных о первой соседней стране
+    const request2 = new XMLHttpRequest();
+    request2.open(
+      'GET',
+      `https://restcountries.com/v3.1/alpha/${firstNeighbour}`
+    );
+    request2.send();
+
+    request2.addEventListener('load', function () {
+      const [data2] = JSON.parse(this.responseText);
+      console.log(data2);
+
+      displayCountry(data2, 'neighbour');
+    });
+  });
+};
+
+const getDataAndConvertToJSON = function (
+  url,
+  errorMessage = 'Что-то пошло не так 🧐.'
+) {
+  return fetch(url).then(response => {
+    if (!response.ok)
+      throw new Error(`${errorMessage} Ошибка ${response.status}`);
+    return response.json();
+  });
+};
+
+const getCoutnryData = function (countryName) {
+  getDataAndConvertToJSON(
+    `https://restcountries.com/v3.1/name/${countryName}`,
+    'Страна не найдена.'
+  )
+    .then(data => {
+      displayCountry(data[0]);
+
+      if (!data[0].borders) throw new Error('Соседних стран не найдено!');
+
+      const firstNeighbour = data[0].borders[0];
+
+      return getDataAndConvertToJSON(
+        `https://restcountries.com/v3.1/alpha/${firstNeighbour}`,
+        'Страна не найдена.'
+      );
+    })
+    .then(data => displayCountry(data[0], 'neighbour'))
+    .catch(e => {
+      console.error(`${e} 🧐`);
+      displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    });
+};
+
+btn.addEventListener('click', function () {
+  getCoutnryData('ukraine');
+});
+
 ////////////////////////////////////////////////////
 
 // const getCoutnryData = function (countryName) {
@@ -73,41 +150,6 @@ const displayError = function (message) {
 //   });
 // };
 
-const getCoutnryAndBorderCountries = function (countryName) {
-  // Вызов AJAX для получения данных о стране
-  const request1 = new XMLHttpRequest();
-  request1.open('GET', `https://restcountries.com/v3.1/name/${countryName}`);
-  request1.send();
-
-  request1.addEventListener('load', function () {
-    const [data1] = JSON.parse(this.responseText);
-    console.log(data1);
-
-    // Отображение страны
-    displayCountry(data1);
-
-    // Получаем первую соседнюю страну
-    const [firstNeighbour] = data1.borders;
-
-    if (!firstNeighbour) return;
-
-    // Вызов AJAX для получения данных о первой соседней стране
-    const request2 = new XMLHttpRequest();
-    request2.open(
-      'GET',
-      `https://restcountries.com/v3.1/alpha/${firstNeighbour}`
-    );
-    request2.send();
-
-    request2.addEventListener('load', function () {
-      const [data2] = JSON.parse(this.responseText);
-      console.log(data2);
-
-      displayCountry(data2, 'neighbour');
-    });
-  });
-};
-
 // getCoutnryAndBorderCountries('usa');
 
 // setTimeout(() => {
@@ -138,17 +180,6 @@ const getCoutnryAndBorderCountries = function (countryName) {
 //       displayCountry(data[0]);
 //     });
 // };
-
-const getDataAndConvertToJSON = function (
-  url,
-  errorMessage = 'Что-то пошло не так 🧐.'
-) {
-  return fetch(url).then(response => {
-    if (!response.ok)
-      throw new Error(`${errorMessage} Ошибка ${response.status}`);
-    return response.json();
-  });
-};
 
 // const getCoutnryData = function (countryName) {
 //   fetch(`https://restcountries.com/v3.1/name/${countryName}`)
@@ -183,37 +214,6 @@ const getDataAndConvertToJSON = function (
 //     });
 // };
 
-const getCoutnryData = function (countryName) {
-  getDataAndConvertToJSON(
-    `https://restcountries.com/v3.1/name/${countryName}`,
-    'Страна не найдена.'
-  )
-    .then(data => {
-      displayCountry(data[0]);
-
-      if (!data[0].borders) throw new Error('Соседних стран не найдено!');
-
-      const firstNeighbour = data[0].borders[0];
-
-      return getDataAndConvertToJSON(
-        `https://restcountries.com/v3.1/alpha/${firstNeighbour}`,
-        'Страна не найдена.'
-      );
-    })
-    .then(data => displayCountry(data[0], 'neighbour'))
-    .catch(e => {
-      console.error(`${e} 🧐`);
-      displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
-};
-
-btn.addEventListener('click', function () {
-  getCoutnryData('ukraine');
-});
-
 // getCoutnryData('japan');
 
 /////////////////////////////////////////////////
@@ -240,35 +240,47 @@ btn.addEventListener('click', function () {
 // Координаты 2  48.857  2.358
 // Координаты 3  40.708  -74.051
 
-const displayCountryByGPS = function (lat, lng) {
-  fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
-    .then(response => {
-      if (!response.ok)
-        throw new Error(
-          `Проблема с геокодированием (ошибка ${response.status})`
-        );
-      return response.json();
-    })
-    .then(data => {
-      console.log(data);
-      console.log(`You are in ${data.city}, ${data.country}`);
-      return getDataAndConvertToJSON(
-        `https://restcountries.com/v3.1/name/${data.country.toLowerCase()}`,
-        'Страна не найдена.'
-      );
-    })
-    .then(data => displayCountry(data[0]))
-    .catch(e => {
-      console.error(`${e} 🧐`);
-      displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    })
+// const displayCountryByGPS = function (lat, lng) {
+//   fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(
+//           `Проблема с геокодированием (ошибка ${response.status})`
+//         );
+//       return response.json();
+//     })
+//     .then(data => {
+//       console.log(data);
+//       console.log(`You are in ${data.city}, ${data.country}`);
+//       return getDataAndConvertToJSON(
+//         `https://restcountries.com/v3.1/name/${data.country.toLowerCase()}`,
+//         'Страна не найдена.'
+//       );
+//     })
+//     .then(data => displayCountry(data[0]))
+//     .catch(e => {
+//       console.error(`${e} 🧐`);
+//       displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     })
 
-    .catch(e => console.error(`${e.message} 🧐`));
-};
+//     .catch(e => console.error(`${e.message} 🧐`));
+// };
 
-displayCountryByGPS(35.756, 139.256);
-displayCountryByGPS(48.857, 2.358);
-displayCountryByGPS(40.708, -74.051);
+// displayCountryByGPS(35.756, 139.256);
+// displayCountryByGPS(48.857, 2.358);
+// displayCountryByGPS(40.708, -74.051);
+
+///////////////////////////////////////////////
+// Пример работы с циклом событий
+
+console.log('Начало теста');
+setTimeout(() => console.log('Таймер 0 секунд'), 0);
+Promise.resolve('Выполненное promise 1').then(result => console.log(result));
+Promise.resolve('Выполненное promise 2').then(result => {
+  for (let i = 0; i < 10000000000; i++) {}
+  console.log(result);
+});
+console.log('Конец теста');
