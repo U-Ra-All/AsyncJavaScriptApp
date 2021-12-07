@@ -1,116 +1,116 @@
 'use strict';
 
-const btn = document.querySelector('.btn-country');
-const countriesContainer = document.querySelector('.countries');
+// const btn = document.querySelector('.btn-country');
+// const countriesContainer = document.querySelector('.countries');
 
-const displayCountry = function (data, className = '') {
-  const currencies = data.currencies;
-  const currensyName = Object.values(currencies)[0].name;
-  const currensySymbol = Object.values(currencies)[0].symbol;
+// const displayCountry = function (data, className = '') {
+//   const currencies = data.currencies;
+//   const currensyName = Object.values(currencies)[0].name;
+//   const currensySymbol = Object.values(currencies)[0].symbol;
 
-  const languages = data.languages;
-  const firstLanguage = Object.values(languages)[0];
+//   const languages = data.languages;
+//   const firstLanguage = Object.values(languages)[0];
 
-  const html = `
-  <article class="country ${className}">
-    <img class="country__img" src="${data.flags.svg}" />
-    <div class="country__data">
-      <h3 class="country__name">${data.name.common}</h3>
-      <h4 class="country__region">${data.region}</h4>
-      <p class="country__row"><span>👨‍👩‍👧‍👦</span>${(
-        +data.population / 1000000
-      ).toFixed(1)} миллионов</p>
-      <p class="country__row"><span>🗣️</span>${firstLanguage}</p>
-      <p class="country__row"><span>💰</span>${currensySymbol} ${currensyName}</p>
-    </div>
-  </article>
-  `;
+//   const html = `
+//   <article class="country ${className}">
+//     <img class="country__img" src="${data.flags.svg}" />
+//     <div class="country__data">
+//       <h3 class="country__name">${data.name.common}</h3>
+//       <h4 class="country__region">${data.region}</h4>
+//       <p class="country__row"><span>👨‍👩‍👧‍👦</span>${(
+//         +data.population / 1000000
+//       ).toFixed(1)} миллионов</p>
+//       <p class="country__row"><span>🗣️</span>${firstLanguage}</p>
+//       <p class="country__row"><span>💰</span>${currensySymbol} ${currensyName}</p>
+//     </div>
+//   </article>
+//   `;
 
-  countriesContainer.insertAdjacentHTML('beforeend', html);
-  // countriesContainer.style.opacity = 1;
-};
+//   countriesContainer.insertAdjacentHTML('beforeend', html);
+//   // countriesContainer.style.opacity = 1;
+// };
 
-const displayError = function (message) {
-  countriesContainer.insertAdjacentText('beforeend', message);
-  // countriesContainer.style.opacity = 1;
-};
+// const displayError = function (message) {
+//   countriesContainer.insertAdjacentText('beforeend', message);
+//   // countriesContainer.style.opacity = 1;
+// };
 
-const getCoutnryAndBorderCountries = function (countryName) {
-  // Вызов AJAX для получения данных о стране
-  const request1 = new XMLHttpRequest();
-  request1.open('GET', `https://restcountries.com/v3.1/name/${countryName}`);
-  request1.send();
+// const getCoutnryAndBorderCountries = function (countryName) {
+//   // Вызов AJAX для получения данных о стране
+//   const request1 = new XMLHttpRequest();
+//   request1.open('GET', `https://restcountries.com/v3.1/name/${countryName}`);
+//   request1.send();
 
-  request1.addEventListener('load', function () {
-    const [data1] = JSON.parse(this.responseText);
-    console.log(data1);
+//   request1.addEventListener('load', function () {
+//     const [data1] = JSON.parse(this.responseText);
+//     console.log(data1);
 
-    // Отображение страны
-    displayCountry(data1);
+//     // Отображение страны
+//     displayCountry(data1);
 
-    // Получаем первую соседнюю страну
-    const [firstNeighbour] = data1.borders;
+//     // Получаем первую соседнюю страну
+//     const [firstNeighbour] = data1.borders;
 
-    if (!firstNeighbour) return;
+//     if (!firstNeighbour) return;
 
-    // Вызов AJAX для получения данных о первой соседней стране
-    const request2 = new XMLHttpRequest();
-    request2.open(
-      'GET',
-      `https://restcountries.com/v3.1/alpha/${firstNeighbour}`
-    );
-    request2.send();
+//     // Вызов AJAX для получения данных о первой соседней стране
+//     const request2 = new XMLHttpRequest();
+//     request2.open(
+//       'GET',
+//       `https://restcountries.com/v3.1/alpha/${firstNeighbour}`
+//     );
+//     request2.send();
 
-    request2.addEventListener('load', function () {
-      const [data2] = JSON.parse(this.responseText);
-      console.log(data2);
+//     request2.addEventListener('load', function () {
+//       const [data2] = JSON.parse(this.responseText);
+//       console.log(data2);
 
-      displayCountry(data2, 'neighbour');
-    });
-  });
-};
+//       displayCountry(data2, 'neighbour');
+//     });
+//   });
+// };
 
-const getDataAndConvertToJSON = function (
-  url,
-  errorMessage = 'Что-то пошло не так 🧐.'
-) {
-  return fetch(url).then(response => {
-    if (!response.ok)
-      throw new Error(`${errorMessage} Ошибка ${response.status}`);
-    return response.json();
-  });
-};
+// const getDataAndConvertToJSON = function (
+//   url,
+//   errorMessage = 'Что-то пошло не так 🧐.'
+// ) {
+//   return fetch(url).then(response => {
+//     if (!response.ok)
+//       throw new Error(`${errorMessage} Ошибка ${response.status}`);
+//     return response.json();
+//   });
+// };
 
-const getCoutnryData = function (countryName) {
-  getDataAndConvertToJSON(
-    `https://restcountries.com/v3.1/name/${countryName}`,
-    'Страна не найдена.'
-  )
-    .then(data => {
-      displayCountry(data[0]);
+// const getCoutnryData = function (countryName) {
+//   getDataAndConvertToJSON(
+//     `https://restcountries.com/v3.1/name/${countryName}`,
+//     'Страна не найдена.'
+//   )
+//     .then(data => {
+//       displayCountry(data[0]);
 
-      if (!data[0].borders) throw new Error('Соседних стран не найдено!');
+//       if (!data[0].borders) throw new Error('Соседних стран не найдено!');
 
-      const firstNeighbour = data[0].borders[0];
+//       const firstNeighbour = data[0].borders[0];
 
-      return getDataAndConvertToJSON(
-        `https://restcountries.com/v3.1/alpha/${firstNeighbour}`,
-        'Страна не найдена.'
-      );
-    })
-    .then(data => displayCountry(data[0], 'neighbour'))
-    .catch(e => {
-      console.error(`${e} 🧐`);
-      displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
-};
+//       return getDataAndConvertToJSON(
+//         `https://restcountries.com/v3.1/alpha/${firstNeighbour}`,
+//         'Страна не найдена.'
+//       );
+//     })
+//     .then(data => displayCountry(data[0], 'neighbour'))
+//     .catch(e => {
+//       console.error(`${e} 🧐`);
+//       displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
 
-btn.addEventListener('click', function () {
-  getCoutnryData('ukraine');
-});
+// btn.addEventListener('click', function () {
+//   getCoutnryData('ukraine');
+// });
 
 ////////////////////////////////////////////////////
 
@@ -354,52 +354,112 @@ btn.addEventListener('click', function () {
 ///////////////////////////////////////////////
 // Промисификация API Геолокации
 
-const getUserPosition = function () {
-  return new Promise(function (resolve, reject) {
-    // navigator.geolocation.getCurrentPosition(
-    //   position => resolve(position),
-    //   e => reject(e)
-    // );
-    navigator.geolocation.getCurrentPosition(resolve, reject);
+// const getUserPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     // navigator.geolocation.getCurrentPosition(
+//     //   position => resolve(position),
+//     //   e => reject(e)
+//     // );
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
+
+// // getUserPosition()
+// //   .then(pos => console.log(pos))
+// //   .catch(e => console.error(e));
+
+// const displayUserCountry = function () {
+//   getUserPosition()
+//     .then(pos => {
+//       const { latitude: lat, longitude: lng } = pos.coords;
+
+//       return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+//     })
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(
+//           `Проблема с геокодированием (ошибка ${response.status})`
+//         );
+//       return response.json();
+//     })
+//     .then(data => {
+//       console.log(data);
+//       console.log(`You are in ${data.city}, ${data.country}`);
+//       return getDataAndConvertToJSON(
+//         `https://restcountries.com/v3.1/name/${data.country.toLowerCase()}`,
+//         'Страна не найдена.'
+//       );
+//     })
+//     .then(data => displayCountry(data[0]))
+//     .catch(e => {
+//       console.error(`${e} 🧐`);
+//       displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     })
+
+//     .catch(e => console.error(`${e.message} 🧐`));
+// };
+
+// displayUserCountry();
+
+///////////////////////////////////////////////
+// Задание 2
+// В этом задании вам нужно будет создать функциональность загрузки изображений
+// 1. Создайте функцию createImageElement(), которая принимает imagePath как входной параметр. Эта функция возвращает promise, которое создает новый HTML элемент img (используйте document.createElement ('img')) и устанавливает атрибут src для предоставленного пути к изображению.
+// 2. Когда загрузка изображения будет завершена, добавьте его к элементу DOM с классом images и сделайте promise выполненным. Значение выполненного promise должно быть самим элементом img. В случае, если при загрузке изображения произошла ошибка (прослушайте событие error), отклоните обещание.
+// 3. Если эта часть слишком непонятна для вас, просто просмотрите первую часть решения в следующем видео.
+// 4. Произведите потребление promise, используя then(), а также добавьте обработчик ошибок.
+// 5. После загрузки изображения приостановите выполнение на 2 секунды, используя функцию wait(), которую мы создали ранее.
+// 6. По истечении 2 секунд спрячьте текущее изображение (установите для CSS свойства display значение none) и загрузите второе изображение (Подсказка: используйте элемент img из promise, возвращенного из createImageElement(), чтобы скрыть текущее изображение. Для этого вам понадобится глобальная переменная)
+// 7. После загрузки второго изображения снова приостановите выполнение на 2 секунды.
+// 8. По истечении 2 секунд спрячьте текущее изображение.
+// Тестовые данные:
+// Изображения в папке img. Протестируйте обработчик ошибок, указав неверный путь к изображению. Установите скорость интернета Fast 3G на вкладке Network в инструментах разработчика, иначе изображения будут загружаться слишком быстро.
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
   });
 };
 
-// getUserPosition()
-//   .then(pos => console.log(pos))
-//   .catch(e => console.error(e));
+const imageContainer = document.querySelector('.images');
 
-const displayUserCountry = function () {
-  getUserPosition()
-    .then(pos => {
-      const { latitude: lat, longitude: lng } = pos.coords;
+let currentImage;
 
-      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-    })
-    .then(response => {
-      if (!response.ok)
-        throw new Error(
-          `Проблема с геокодированием (ошибка ${response.status})`
-        );
-      return response.json();
-    })
-    .then(data => {
-      console.log(data);
-      console.log(`You are in ${data.city}, ${data.country}`);
-      return getDataAndConvertToJSON(
-        `https://restcountries.com/v3.1/name/${data.country.toLowerCase()}`,
-        'Страна не найдена.'
-      );
-    })
-    .then(data => displayCountry(data[0]))
-    .catch(e => {
-      console.error(`${e} 🧐`);
-      displayError(`Что-то пошло не так 🧐: ${e.message} Попробуйте ещё раз!`);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    })
+const createImageElement = function (imagePath) {
+  return new Promise(function (resolve, reject) {
+    const imgEl = document.createElement('img');
+    imgEl.src = imagePath;
 
-    .catch(e => console.error(`${e.message} 🧐`));
+    imgEl.addEventListener('load', function () {
+      imageContainer.append(imgEl);
+      resolve(imgEl);
+    });
+
+    imgEl.addEventListener('error', function () {
+      reject(new Error('Изображение не найдено'));
+    });
+  });
 };
 
-displayUserCountry();
+createImageElement('img/image1.jpg')
+  .then(image => {
+    currentImage = image;
+    console.log('Первое изображение загружено');
+    return wait(2);
+  })
+  .then(() => {
+    currentImage.style.display = 'none';
+    return createImageElement('img/image2.jpg');
+  })
+  .then(image => {
+    currentImage = image;
+    console.log('Второе изображение загружено');
+    return wait(2);
+  })
+  .then(() => {
+    currentImage.style.display = 'none';
+  })
+  .catch(e => console.error(e));
