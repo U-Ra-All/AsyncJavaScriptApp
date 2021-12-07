@@ -517,7 +517,6 @@ const getCountryData = async function () {
       throw new Error('Проблема с извлечением местоположения');
 
     const geocodingData = await geocodingResponse.json();
-    console.log(geocodingData);
 
     const response = await fetch(
       `https://restcountries.com/v3.1/name/${geocodingData.country.toLowerCase()}`
@@ -526,22 +525,31 @@ const getCountryData = async function () {
     if (!response.ok) throw new Error('Проблема с получением страны');
 
     const data = await response.json();
-    console.log(data);
     displayCountry(data[0]);
+    return `You are in ${geocodingData.city}, ${geocodingData.country}`;
   } catch (e) {
     console.error(`${e} 🧐`);
     displayError(`Что-то пошло не так 🧐 ${e.message}`);
+
+    // Отклоняем promise, возвращаемое из асинхронной функции
+    throw e;
   }
 };
 
-getCountryData();
-console.log('Синхронный код');
+console.log('1 Будем получать местоположение');
+// const place = getCountryData();
+// console.log(place);
+// getCountryData()
+//   .then(place => console.log(`2 ${place}`))
+//   .catch(e => console.error(`2 ${e.message} 🧐`))
+//   .finally(() => console.log('3 Получили местоположение'));
 
-try {
-  let x = 2;
-  const y = 3;
-  x = 1;
-  console.log(x, y);
-} catch (e) {
-  alert(e.message);
-}
+(async function () {
+  try {
+    const place = await getCountryData();
+    console.log(`2 ${place}`);
+  } catch (e) {
+    console.error(`2 ${e.message} 🧐`);
+  }
+  console.log('3 Получили местоположение');
+})();
