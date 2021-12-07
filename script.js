@@ -1,34 +1,34 @@
 'use strict';
 
-// const btn = document.querySelector('.btn-country');
-// const countriesContainer = document.querySelector('.countries');
+const btn = document.querySelector('.btn-country');
+const countriesContainer = document.querySelector('.countries');
 
-// const displayCountry = function (data, className = '') {
-//   const currencies = data.currencies;
-//   const currensyName = Object.values(currencies)[0].name;
-//   const currensySymbol = Object.values(currencies)[0].symbol;
+const displayCountry = function (data, className = '') {
+  const currencies = data.currencies;
+  const currensyName = Object.values(currencies)[0].name;
+  const currensySymbol = Object.values(currencies)[0].symbol;
 
-//   const languages = data.languages;
-//   const firstLanguage = Object.values(languages)[0];
+  const languages = data.languages;
+  const firstLanguage = Object.values(languages)[0];
 
-//   const html = `
-//   <article class="country ${className}">
-//     <img class="country__img" src="${data.flags.svg}" />
-//     <div class="country__data">
-//       <h3 class="country__name">${data.name.common}</h3>
-//       <h4 class="country__region">${data.region}</h4>
-//       <p class="country__row"><span>👨‍👩‍👧‍👦</span>${(
-//         +data.population / 1000000
-//       ).toFixed(1)} миллионов</p>
-//       <p class="country__row"><span>🗣️</span>${firstLanguage}</p>
-//       <p class="country__row"><span>💰</span>${currensySymbol} ${currensyName}</p>
-//     </div>
-//   </article>
-//   `;
+  const html = `
+  <article class="country ${className}">
+    <img class="country__img" src="${data.flags.svg}" />
+    <div class="country__data">
+      <h3 class="country__name">${data.name.common}</h3>
+      <h4 class="country__region">${data.region}</h4>
+      <p class="country__row"><span>👨‍👩‍👧‍👦</span>${(
+        +data.population / 1000000
+      ).toFixed(1)} миллионов</p>
+      <p class="country__row"><span>🗣️</span>${firstLanguage}</p>
+      <p class="country__row"><span>💰</span>${currensySymbol} ${currensyName}</p>
+    </div>
+  </article>
+  `;
 
-//   countriesContainer.insertAdjacentHTML('beforeend', html);
-//   // countriesContainer.style.opacity = 1;
-// };
+  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.style.opacity = 1;
+};
 
 // const displayError = function (message) {
 //   countriesContainer.insertAdjacentText('beforeend', message);
@@ -418,48 +418,110 @@
 // Тестовые данные:
 // Изображения в папке img. Протестируйте обработчик ошибок, указав неверный путь к изображению. Установите скорость интернета Fast 3G на вкладке Network в инструментах разработчика, иначе изображения будут загружаться слишком быстро.
 
-const wait = function (seconds) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, seconds * 1000);
-  });
-};
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
 
-const imageContainer = document.querySelector('.images');
+// const imageContainer = document.querySelector('.images');
 
-let currentImage;
+// let currentImage;
 
-const createImageElement = function (imagePath) {
+// const createImageElement = function (imagePath) {
+//   return new Promise(function (resolve, reject) {
+//     const imgEl = document.createElement('img');
+//     imgEl.src = imagePath;
+
+//     imgEl.addEventListener('load', function () {
+//       imageContainer.append(imgEl);
+//       resolve(imgEl);
+//     });
+
+//     imgEl.addEventListener('error', function () {
+//       reject(new Error('Изображение не найдено'));
+//     });
+//   });
+// };
+
+// createImageElement('img/image1.jpg')
+//   .then(image => {
+//     currentImage = image;
+//     console.log('Первое изображение загружено');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//     return createImageElement('img/image2.jpg');
+//   })
+//   .then(image => {
+//     currentImage = image;
+//     console.log('Второе изображение загружено');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//   })
+//   .catch(e => console.error(e));
+
+// const getCoutnryData = function (countryName) {
+//   fetch(`https://restcountries.com/v3.1/name/${countryName}`)
+//     .then(response => {
+//       console.log(response);
+
+//       if (!response.ok)
+//         throw new Error(`Страна не найдена. Ошибка ${response.status}`);
+//       return response.json();
+//     })
+//     .then(data => {
+//       displayCountry(data[0]);
+//       // const firstNeighbour = data[0].borders[0];
+//       const firstNeighbour = 'afasga';
+
+//       if (!firstNeighbour) return;
+
+//       return fetch(`https://restcountries.com/v3.1/alpha/${firstNeighbour}`);
+//     })
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Страна не найдена. Ошибка ${response.status}`);
+//       return response.json();
+//     })
+//     .then(data => displayCountry(data[0], 'neighbour'))
+//     .catch(e => {
+//       console.error(`${e} 🧐`);
+//       displayError(`Что-то пошло не так 🧐: ${e.message}. Попробуйте ещё раз!`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
+
+const getUserPosition = function () {
   return new Promise(function (resolve, reject) {
-    const imgEl = document.createElement('img');
-    imgEl.src = imagePath;
-
-    imgEl.addEventListener('load', function () {
-      imageContainer.append(imgEl);
-      resolve(imgEl);
-    });
-
-    imgEl.addEventListener('error', function () {
-      reject(new Error('Изображение не найдено'));
-    });
+    navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
 
-createImageElement('img/image1.jpg')
-  .then(image => {
-    currentImage = image;
-    console.log('Первое изображение загружено');
-    return wait(2);
-  })
-  .then(() => {
-    currentImage.style.display = 'none';
-    return createImageElement('img/image2.jpg');
-  })
-  .then(image => {
-    currentImage = image;
-    console.log('Второе изображение загружено');
-    return wait(2);
-  })
-  .then(() => {
-    currentImage.style.display = 'none';
-  })
-  .catch(e => console.error(e));
+const getCountryData = async function () {
+  const userPosition = await getUserPosition();
+
+  const { latitude: lat, longitude: lng } = userPosition.coords;
+
+  const geocodingResponse = await fetch(
+    `https://geocode.xyz/${lat},${lng}?geoit=json`
+  );
+
+  const geocodingData = await geocodingResponse.json();
+  console.log(geocodingData);
+
+  const response = await fetch(
+    `https://restcountries.com/v3.1/name/${geocodingData.country.toLowerCase()}`
+  );
+  const data = await response.json();
+  console.log(data);
+  displayCountry(data[0]);
+};
+
+getCountryData();
+console.log('Синхронный код');
