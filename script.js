@@ -30,10 +30,10 @@ const displayCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
-// const displayError = function (message) {
-//   countriesContainer.insertAdjacentText('beforeend', message);
-//   // countriesContainer.style.opacity = 1;
-// };
+const displayError = function (message) {
+  countriesContainer.insertAdjacentText('beforeend', message);
+  countriesContainer.style.opacity = 1;
+};
 
 // const getCoutnryAndBorderCountries = function (countryName) {
 //   // Вызов AJAX для получения данных о стране
@@ -504,24 +504,44 @@ const getUserPosition = function () {
 };
 
 const getCountryData = async function () {
-  const userPosition = await getUserPosition();
+  try {
+    const userPosition = await getUserPosition();
 
-  const { latitude: lat, longitude: lng } = userPosition.coords;
+    const { latitude: lat, longitude: lng } = userPosition.coords;
 
-  const geocodingResponse = await fetch(
-    `https://geocode.xyz/${lat},${lng}?geoit=json`
-  );
+    const geocodingResponse = await fetch(
+      `https://geocode.xyz/${lat},${lng}?geoit=json`
+    );
 
-  const geocodingData = await geocodingResponse.json();
-  console.log(geocodingData);
+    if (!geocodingResponse.ok)
+      throw new Error('Проблема с извлечением местоположения');
 
-  const response = await fetch(
-    `https://restcountries.com/v3.1/name/${geocodingData.country.toLowerCase()}`
-  );
-  const data = await response.json();
-  console.log(data);
-  displayCountry(data[0]);
+    const geocodingData = await geocodingResponse.json();
+    console.log(geocodingData);
+
+    const response = await fetch(
+      `https://restcountries.com/v3.1/name/${geocodingData.country.toLowerCase()}`
+    );
+
+    if (!response.ok) throw new Error('Проблема с получением страны');
+
+    const data = await response.json();
+    console.log(data);
+    displayCountry(data[0]);
+  } catch (e) {
+    console.error(`${e} 🧐`);
+    displayError(`Что-то пошло не так 🧐 ${e.message}`);
+  }
 };
 
 getCountryData();
 console.log('Синхронный код');
+
+try {
+  let x = 2;
+  const y = 3;
+  x = 1;
+  console.log(x, y);
+} catch (e) {
+  alert(e.message);
+}
