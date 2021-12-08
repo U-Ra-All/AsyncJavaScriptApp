@@ -70,16 +70,16 @@ const displayError = function (message) {
 //   });
 // };
 
-// const getDataAndConvertToJSON = function (
-//   url,
-//   errorMessage = 'Что-то пошло не так 🧐.'
-// ) {
-//   return fetch(url).then(response => {
-//     if (!response.ok)
-//       throw new Error(`${errorMessage} Ошибка ${response.status}`);
-//     return response.json();
-//   });
-// };
+const getDataAndConvertToJSON = function (
+  url,
+  errorMessage = 'Что-то пошло не так 🧐.'
+) {
+  return fetch(url).then(response => {
+    if (!response.ok)
+      throw new Error(`${errorMessage} Ошибка ${response.status}`);
+    return response.json();
+  });
+};
 
 // const getCoutnryData = function (countryName) {
 //   getDataAndConvertToJSON(
@@ -497,59 +497,97 @@ const displayError = function (message) {
 //     });
 // };
 
-const getUserPosition = function () {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject);
-  });
-};
+///////////////////////////////////////////////
+// Возвращаемые Значения в Асинхронных Функциях
 
-const getCountryData = async function () {
-  try {
-    const userPosition = await getUserPosition();
+// const getUserPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
 
-    const { latitude: lat, longitude: lng } = userPosition.coords;
+// const getCountryData = async function () {
+//   try {
+//     const userPosition = await getUserPosition();
 
-    const geocodingResponse = await fetch(
-      `https://geocode.xyz/${lat},${lng}?geoit=json`
-    );
+//     const { latitude: lat, longitude: lng } = userPosition.coords;
 
-    if (!geocodingResponse.ok)
-      throw new Error('Проблема с извлечением местоположения');
+//     const geocodingResponse = await fetch(
+//       `https://geocode.xyz/${lat},${lng}?geoit=json`
+//     );
 
-    const geocodingData = await geocodingResponse.json();
+//     if (!geocodingResponse.ok)
+//       throw new Error('Проблема с извлечением местоположения');
 
-    const response = await fetch(
-      `https://restcountries.com/v3.1/name/${geocodingData.country.toLowerCase()}`
-    );
+//     const geocodingData = await geocodingResponse.json();
 
-    if (!response.ok) throw new Error('Проблема с получением страны');
+//     const response = await fetch(
+//       `https://restcountries.com/v3.1/name/${geocodingData.country.toLowerCase()}`
+//     );
 
-    const data = await response.json();
-    displayCountry(data[0]);
-    return `You are in ${geocodingData.city}, ${geocodingData.country}`;
-  } catch (e) {
-    console.error(`${e} 🧐`);
-    displayError(`Что-то пошло не так 🧐 ${e.message}`);
+//     if (!response.ok) throw new Error('Проблема с получением страны');
 
-    // Отклоняем promise, возвращаемое из асинхронной функции
-    throw e;
-  }
-};
+//     const data = await response.json();
+//     displayCountry(data[0]);
+//     return `You are in ${geocodingData.city}, ${geocodingData.country}`;
+//   } catch (e) {
+//     console.error(`${e} 🧐`);
+//     displayError(`Что-то пошло не так 🧐 ${e.message}`);
 
-console.log('1 Будем получать местоположение');
-// const place = getCountryData();
-// console.log(place);
-// getCountryData()
-//   .then(place => console.log(`2 ${place}`))
-//   .catch(e => console.error(`2 ${e.message} 🧐`))
-//   .finally(() => console.log('3 Получили местоположение'));
+//     // Отклоняем promise, возвращаемое из асинхронной функции
+//     throw e;
+//   }
+// };
 
-(async function () {
-  try {
-    const place = await getCountryData();
-    console.log(`2 ${place}`);
-  } catch (e) {
-    console.error(`2 ${e.message} 🧐`);
-  }
-  console.log('3 Получили местоположение');
-})();
+// console.log('1 Будем получать местоположение');
+// // const place = getCountryData();
+// // console.log(place);
+// // getCountryData()
+// //   .then(place => console.log(`2 ${place}`))
+// //   .catch(e => console.error(`2 ${e.message} 🧐`))
+// //   .finally(() => console.log('3 Получили местоположение'));
+
+// (async function () {
+//   try {
+//     const place = await getCountryData();
+//     console.log(`2 ${place}`);
+//   } catch (e) {
+//     console.error(`2 ${e.message} 🧐`);
+//   }
+//   console.log('3 Получили местоположение');
+// })();
+
+///////////////////////////////////////////////
+// Запуск Нескольких Promise Параллельно
+
+// const print3CountriesCapitals = async function (counry1, counry2, counry3) {
+//   try {
+//     // const [country1Data] = await getDataAndConvertToJSON(
+//     //   `https://restcountries.com/v3.1/name/${counry1}`
+//     // );
+//     // const [country2Data] = await getDataAndConvertToJSON(
+//     //   `https://restcountries.com/v3.1/name/${counry2}`
+//     // );
+//     // const [country3Data] = await getDataAndConvertToJSON(
+//     //   `https://restcountries.com/v3.1/name/${counry3}`
+//     // );
+
+//     // console.log([
+//     //   country1Data.capital,
+//     //   country2Data.capital,
+//     //   country3Data.capital,
+//     // ]);
+
+//     const countriesData = await Promise.all([
+//       getDataAndConvertToJSON(`https://restcountries.com/v3.1/name/${counry1}`),
+//       getDataAndConvertToJSON(`https://restcountries.com/v3.1/name/${counry2}`),
+//       getDataAndConvertToJSON(`https://restcountries.com/v3.1/name/${counry3}`),
+//     ]);
+
+//     console.log(countriesData.map(countryData => countryData[0].capital));
+//   } catch (e) {
+//     console.error(e);
+//   }
+// };
+
+// print3CountriesCapitals('ukraine', 'russia', 'canada');
