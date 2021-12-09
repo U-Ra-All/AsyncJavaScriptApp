@@ -606,13 +606,13 @@ const getDataAndConvertToJSON = function (
 //   console.log(response[0]);
 // })();
 
-const timeout = function (seconds) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error('Запрос превысил допустимое время'));
-    }, seconds * 1000);
-  });
-};
+// const timeout = function (seconds) {
+//   return new Promise(function (_, reject) {
+//     setTimeout(function () {
+//       reject(new Error('Запрос превысил допустимое время'));
+//     }, seconds * 1000);
+//   });
+// };
 
 // Promise.race([
 //   getDataAndConvertToJSON(`https://restcountries.com/v3.1/name/spain`),
@@ -637,10 +637,108 @@ const timeout = function (seconds) {
 //   .catch(e => console.error(e));
 
 // Promise.any() ES2021
-Promise.any([
-  Promise.reject('Отклонено!'),
-  Promise.resolve('1 Выполнено!'),
-  Promise.resolve('2 Выполнено!'),
-])
-  .then(data => console.log(data))
-  .catch(e => console.error(e));
+// Promise.any([
+//   Promise.reject('Отклонено!'),
+//   Promise.resolve('1 Выполнено!'),
+//   Promise.resolve('2 Выполнено!'),
+// ])
+//   .then(data => console.log(data))
+//   .catch(e => console.error(e));
+
+///////////////////////////////////////////////
+// Задание 3
+
+// 1. Создайте асинхронную функцию loadAndWait(), которая повторяет функциональность из Задания 2, но на этот раз с использованием async / await (только та часть, где promise потребляется, повторно используйте ранее созданную функцию createImageElement())
+// 2. Сравните эти 2 версии, подумайте о различиях и выберите то, что вам больше нравится.
+// 3. Не забудьте протестировать обработчик ошибок и установить скорость сети на Fast3G на вкладке Network в инструментах разработчика.
+// 4. Создайте асинхронную функцию loadAllImages(), которая принимает массив путей к изображениям imagePathsArray.
+// 5. Используйте map() для перебора элементов массива, чтобы загрузить все изображения с помощью функции createImageElement() (получившийся массив назовите images).
+// 6. Ознакомьтесь с массивом images в консоли! Это похоже на то, что вы ожидали?
+// 7. Используйте функцию комбинирования для фактического получения изображений из массива.
+// 8. Добавьте класс parallel для всех изображений (в нём есть некоторые стили CSS).
+// Тестовые данные:
+// ['img / image1.jpg', 'img / image2.jpg', 'img / image3.jpg']
+// Для теста отключите функцию loadAndWait().
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+const imageContainer = document.querySelector('.images');
+
+// let currentImage;
+
+const createImageElement = function (imagePath) {
+  return new Promise(function (resolve, reject) {
+    const imgEl = document.createElement('img');
+    imgEl.src = imagePath;
+
+    imgEl.addEventListener('load', function () {
+      imageContainer.append(imgEl);
+      resolve(imgEl);
+    });
+
+    imgEl.addEventListener('error', function () {
+      reject(new Error('Изображение не найдено'));
+    });
+  });
+};
+
+// createImageElement('img/image1.jpg')
+//   .then(image => {
+//     currentImage = image;
+//     console.log('Первое изображение загружено');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//     return createImageElement('img/image2.jpg');
+//   })
+//   .then(image => {
+//     currentImage = image;
+//     console.log('Второе изображение загружено');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//   })
+//   .catch(e => console.error(e));
+
+const loadAndWait = async function () {
+  try {
+    // Загрузка первого изображения
+    let image = await createImageElement('img/image1.jpg');
+    console.log('Первое изображение загружено');
+    await wait(2);
+    image.style.display = 'none';
+
+    // Загрузка второго изображения
+    image = await createImageElement('img/image2.jpg');
+    console.log('Второе изображение загружено');
+    await wait(2);
+    image.style.display = 'none';
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// loadAndWait();
+
+const loadAllImages = async function (imagePathsArray) {
+  try {
+    const images = imagePathsArray.map(
+      async imagePath => await createImageElement(imagePath)
+    );
+    console.log(images);
+
+    const imageElements = await Promise.all(images);
+    console.log(imageElements);
+    imageElements.forEach(img => img.classList.add('parallel'));
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+loadAllImages(['img/image1.jpg', 'img/image2.jpg', 'img/image3.jpg']);
